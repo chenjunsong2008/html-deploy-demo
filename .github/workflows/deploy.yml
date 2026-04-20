@@ -34,7 +34,11 @@ jobs:
         run: |
           rm -rf ./_site
           mkdir -p ./_site
+          mkdir -p ./_site/数字图书列表
+          # Publish both paths so the root URL and the legacy subdirectory URL keep working.
           cp -R ./数字图书列表/. ./_site/
+          cp -R ./数字图书列表/. ./_site/数字图书列表/
+          cp ./index.html ./_site/index.html
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
