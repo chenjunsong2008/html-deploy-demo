@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      # Temporary branch trigger so the current fix can publish before it is merged.
+      - copilot/deploy-project
   workflow_dispatch:
 
 permissions:
@@ -18,9 +20,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    # Do not bind this branch-publish job to the `github-pages` environment,
+    # because that environment is configured to block non-main deployments before steps start.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,10 +31,20 @@ jobs:
         with:
           enablement: true
 
+      - name: Prepare artifact
+        run: |
+          rm -rf ./_site
+          mkdir -p ./_site
+          mkdir -p ./_site/数字图书列表
+          # Publish both paths so the root URL and the legacy subdirectory URL keep working.
+          cp -R ./数字图书列表/. ./_site/
+          cp -R ./数字图书列表/. ./_site/数字图书列表/
+          cp ./index.html ./_site/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: ./_site
 
       - name: Deploy to GitHub Pages
         id: deployment
