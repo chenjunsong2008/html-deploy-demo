@@ -20,6 +20,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Do not bind this branch-publish job to the `github-pages` environment,
+    # because that environment is configured to block non-main deployments before steps start.
     steps:
       - name: Checkout
         uses: actions/checkout@v4
