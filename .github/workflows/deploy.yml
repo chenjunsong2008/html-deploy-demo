@@ -30,10 +30,16 @@ jobs:
         with:
           enablement: true
 
+      - name: Prepare artifact
+        run: |
+          rm -rf ./_site
+          mkdir -p ./_site
+          cp -R ./数字图书列表/. ./_site/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./数字图书列表
+          path: ./_site
 
       - name: Deploy to GitHub Pages
         id: deployment
