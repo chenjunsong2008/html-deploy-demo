@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数字图书列表</title>
+    <link rel="stylesheet" href="./book-list.css?v=20260420-1" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <section class="filter-panel panel">
+        <div class="filter-toolbar">
+          <div class="filter-scroll-area" aria-label="全局筛选操作区">
+            <div id="filter-controls" class="filter-controls">
+              <select id="shelf-filter" class="field-control field-select" aria-label="上架状态筛选">
+                <option value="" selected hidden>请选择上架状态</option>
+                <option value="上架">上架</option>
+                <option value="下架">下架</option>
+              </select>
+              <select id="auto-grading-filter" class="field-control field-select" aria-label="书版自动批改状态筛选">
+                <option value="" selected hidden>请选择书版自动批改状态</option>
+                <option value="开启">开启</option>
+                <option value="关闭">关闭</option>
+              </select>
+              <select id="type-filter" class="field-control field-select" aria-label="类型筛选">
+                <option value="" selected hidden>请选择类型</option>
+                <option value="自有教辅">自有教辅</option>
+                <option value="数字教辅">数字教辅</option>
+              </select>
+              <select id="category-filter" class="field-control field-select" aria-label="分类筛选">
+                <option value="" selected hidden>请选择分类</option>
+                <option value="成书">成书</option>
+                <option value="活页">活页</option>
+              </select>
+              <select id="subject-filter" class="field-control field-select" aria-label="学科筛选">
+                <option value="" selected hidden>请选择学科</option>
+                <option value="语文">语文</option>
+                <option value="数学">数学</option>
+                <option value="英语">英语</option>
+                <option value="物理">物理</option>
+                <option value="化学">化学</option>
+              </select>
+              <select id="stage-filter" class="field-control field-select" aria-label="学段筛选">
+                <option value="" selected hidden>请选择学段</option>
+                <option value="小学">小学</option>
+                <option value="初中">初中</option>
+              </select>
+              <select id="grade-filter" class="field-control field-select" aria-label="年级筛选">
+                <option value="" selected hidden>请选择年级</option>
+                <option value="一年级(上)">一年级(上)</option>
+                <option value="三年级(下)">三年级(下)</option>
+                <option value="七年级(下)">七年级(下)</option>
+                <option value="九年级(全)">九年级(全)</option>
+              </select>
+              <input id="code-filter" class="field-control field-input" type="text" placeholder="请输入编号" aria-label="编号" />
+              <input id="name-filter" class="field-control field-input field-input-wide" type="text" placeholder="请输入名称" aria-label="名称" />
+              <input id="custom-filter" class="field-control field-input" type="text" placeholder="请输入自编号" aria-label="自编号" />
+              <input id="creator-filter" class="field-control field-input" type="text" placeholder="请输入创建人" aria-label="创建人" />
+              <div class="date-range-field" data-date-range-trigger="created" aria-label="创建时间范围">
+                <input id="created-start-filter" class="field-control field-input field-date" type="text" placeholder="选择创建时间" aria-label="创建开始时间" inputmode="numeric" />
+                <span class="date-range-separator">→</span>
+                <input id="created-end-filter" class="field-control field-input field-date" type="text" placeholder="选择创建时间" aria-label="创建结束时间" inputmode="numeric" />
+              </div>
+              <input id="recent-operator-filter" class="field-control field-input" type="text" placeholder="请输入最近操作人" aria-label="最近操作人" />
+              <div class="date-range-field" data-date-range-trigger="recent" aria-label="最近操作时间范围">
+                <input id="recent-start-filter" class="field-control field-input field-date" type="text" placeholder="选择最近操作时间" aria-label="最近操作开始时间" inputmode="numeric" />
+                <span class="date-range-separator">→</span>
+                <input id="recent-end-filter" class="field-control field-input field-date" type="text" placeholder="选择最近操作时间" aria-label="最近操作结束时间" inputmode="numeric" />
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-actions">
+            <div id="filter-toggle-row" class="filter-toggle-row" hidden>
+              <button id="filter-toggle-button" class="filter-toggle-button" type="button" aria-expanded="false">展开筛选</button>
+            </div>
+            <button id="search-button" class="button button-primary" type="button">查询</button>
+            <button id="reset-button" class="button button-muted" type="button">重置</button>
+            <button id="export-button" class="button button-primary button-secondary-primary" type="button">导出数据</button>
+          </div>
+
+          <div id="filter-controls-overflow" class="filter-controls-overflow" hidden></div>
+        </div>
+      </section>
+
+      <section class="content-panel panel">
+        <header class="page-head">
+          <div class="page-head-main">
+            <div class="page-title-row">
+              <h1>数字图书列表</h1>
+              <section id="selection-toolbar" class="selection-toolbar is-idle" aria-hidden="true">
+                <div class="selection-summary">
+                  已选 <strong id="selected-count">0</strong> 本
+                </div>
+                <div class="selection-actions">
+                  <button id="batch-up-button" class="button button-primary" type="button">批量上架</button>
+                  <button id="batch-down-button" class="button button-warn" type="button">批量下架</button>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="page-head-actions">
+            <button id="create-book-button" class="button button-primary" type="button">新建图书</button>
+          </div>
+        </header>
+
+        <div class="table-panel">
+          <div class="table-head-scroll" aria-hidden="true">
+            <table class="data-table">
+              <colgroup>
+                <col class="col-select" />
+                <col class="col-code" />
+                <col class="col-cover" />
+                <col class="col-name" />
+                <col class="col-category" />
+                <col class="col-type" />
+                <col class="col-tag" />
+                <col class="col-series" />
+                <col class="col-created-meta" />
+                <col class="col-recent-meta" />
+                <col class="col-progress" />
+                <col class="col-answer-region" />
+                <col class="col-shelf" />
+                <col class="col-auto-grading" />
+                <col class="col-action" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="select-column sticky-left sticky-left-0">
+                    <input id="select-all" class="table-checkbox" type="checkbox" aria-label="全选当前页" />
+                  </th>
+                  <th class="code-column sticky-left sticky-left-1">编号</th>
+                  <th class="cover-column sticky-left sticky-left-2">封面</th>
+                  <th class="name-column align-left sticky-left sticky-left-3">名称</th>
+                  <th>分类</th>
+                  <th>类型 <span class="hint-icon header-help" tabindex="0" aria-label="类型说明" data-tooltip="【自有教辅】，当【自有教辅】审核完成后同步至【数字教辅】">?</span></th>
+                  <th>图书标签</th>
+                  <th>套系信息</th>
+                  <th>创建人与时间</th>
+                  <th>最近操作人与时间</th>
+                  <th>精编进度 <span class="hint-icon header-help" tabindex="0" aria-label="精编进度说明" data-tooltip="末级目录的关联试卷中已审核通过的试卷数/总末级目录数">?</span></th>
+                  <th>作答区完成情况 <span class="hint-icon header-help" tabindex="0" aria-label="作答区完成情况说明" data-tooltip="【文件状态】：文件未设置/文件已设置&#10;【作答区完成进度】：已完成作答区的试题数/图书总题数">?</span></th>
+                  <th>上架状态</th>
+                  <th>书版自动批改状态</th>
+                  <th class="action-column">操作</th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+
+          <div id="table-body-scroll" class="table-body-scroll" aria-label="教辅列表数据表格">
+            <table class="data-table">
+              <colgroup>
+                <col class="col-select" />
+                <col class="col-code" />
+                <col class="col-cover" />
+                <col class="col-name" />
+                <col class="col-category" />
+                <col class="col-type" />
+                <col class="col-tag" />
+                <col class="col-series" />
+                <col class="col-created-meta" />
+                <col class="col-recent-meta" />
+                <col class="col-progress" />
+                <col class="col-answer-region" />
+                <col class="col-shelf" />
+                <col class="col-auto-grading" />
+                <col class="col-action" />
+              </colgroup>
+              <tbody id="book-table-body"></tbody>
+            </table>
+          </div>
+
+          <div id="mobile-card-list" class="mobile-card-list" aria-label="移动端教辅卡片列表"></div>
+        </div>
+
+        <footer class="pagination-bar">
+          <div id="pagination-total" class="pagination-total">共0条</div>
+          <div class="pagination-controls">
+            <button id="prev-page" class="page-nav" type="button" aria-label="上一页">&lt;</button>
+            <div id="page-list" class="page-list" aria-label="分页页码"></div>
+            <button id="next-page" class="page-nav" type="button" aria-label="下一页">&gt;</button>
+          </div>
+          <div class="pagination-side">
+            <label class="page-size-box">
+              <select id="page-size" class="page-size-select" aria-label="每页条数">
+                <option value="10" selected>10条/页</option>
+                <option value="20">20条/页</option>
+                <option value="50">50条/页</option>
+                <option value="100">100条/页</option>
+              </select>
+            </label>
+            <label class="page-jump-box">
+              <span class="page-jump-label">跳至</span>
+              <input id="page-jump-input" class="page-jump-input" type="number" min="1" step="1" inputmode="numeric" aria-label="跳转页码" />
+              <span class="page-jump-label">页</span>
+            </label>
+          </div>
+        </footer>
+      </section>
+    </div>
+
+    <div id="date-range-picker" class="date-picker-popover" hidden aria-hidden="true">
+      <section class="date-picker-panel" role="dialog" aria-modal="false" aria-labelledby="date-picker-title">
+        <aside class="date-picker-shortcuts" aria-label="快捷范围">
+          <button class="date-shortcut-button" type="button" data-range-shortcut="past-7">过去7天</button>
+          <button class="date-shortcut-button" type="button" data-range-shortcut="past-15">过去15天</button>
+          <button class="date-shortcut-button" type="button" data-range-shortcut="past-30">过去30天</button>
+          <button class="date-shortcut-button" type="button" data-range-shortcut="this-year">本年</button>
+          <button class="date-shortcut-button" type="button" data-range-shortcut="this-month">本月</button>
+          <button class="date-shortcut-button" type="button" data-range-shortcut="next-15">未来15天</button>
+        </aside>
+        <div class="date-picker-body">
+          <h3 id="date-picker-title" class="date-picker-title">时间范围</h3>
+          <div id="date-picker-calendars" class="date-picker-calendars"></div>
+          <div class="date-picker-footer">
+            <div id="date-picker-summary" class="date-picker-summary">未选择时间范围</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="confirm-modal" class="confirm-modal" hidden aria-hidden="true">
+      <div class="confirm-backdrop" data-confirm-close="true"></div>
+      <section class="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="confirm-header">
+          <div class="detail-header-main">
+            <h3 id="confirm-title" class="confirm-title">确认操作</h3>
+          </div>
+          <div class="detail-header-drag-zone" data-drag-handle="true" aria-hidden="true"></div>
+          <button id="confirm-close" class="confirm-close" type="button" aria-label="关闭确认弹框">×</button>
+        </div>
+        <div class="confirm-body">
+          <p id="confirm-message" class="confirm-message">是否继续当前操作？</p>
+        </div>
+        <div class="confirm-actions">
+          <button id="confirm-cancel" class="button button-muted" type="button">取消</button>
+          <button id="confirm-submit" class="button button-primary" type="button">确定</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="preview-modal" class="preview-modal" hidden aria-hidden="true">
+      <div class="preview-backdrop" data-preview-close="true"></div>
+      <section class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="preview-title">
+        <div class="preview-header">
+          <div class="detail-header-main">
+            <h3 id="preview-title" class="preview-title">封面预览</h3>
+          </div>
+          <div class="detail-header-drag-zone" data-drag-handle="true" aria-hidden="true"></div>
+          <button id="preview-close" class="preview-close" type="button" aria-label="关闭预览">×</button>
+        </div>
+        <div class="preview-body">
+          <img id="preview-image" class="preview-image" alt="图书封面预览" />
+        </div>
+      </section>
+    </div>
+
+    <div id="name-editor-popover" class="name-editor-popover" hidden>
+      <div class="name-editor-card" role="dialog" aria-modal="false" aria-labelledby="name-editor-title">
+        <div class="name-editor-header">
+          <div class="detail-header-main">
+            <h3 id="name-editor-title" class="name-editor-title">编辑名称</h3>
+          </div>
+          <div class="detail-header-drag-zone" aria-hidden="true"></div>
+          <button id="name-editor-close" class="name-editor-close" type="button" aria-label="关闭名称编辑">×</button>
+        </div>
+        <textarea id="name-editor-textarea" class="name-editor-textarea" rows="3" maxlength="120" aria-label="图书名称"></textarea>
+        <div class="name-editor-actions">
+          <button id="name-editor-cancel" class="button button-muted" type="button">取消</button>
+          <button id="name-editor-save" class="button button-primary" type="button">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="basic-info-modal" class="detail-modal" hidden aria-hidden="true">
+      <div class="detail-backdrop" data-basic-close="true"></div>
+      <section class="detail-dialog detail-dialog-large" role="dialog" aria-modal="true" aria-labelledby="basic-info-title">
+        <div class="detail-header detail-header-standard">
+          <div class="detail-header-main">
+            <h3 id="basic-info-title" class="detail-title">图书基本信息</h3>
+          </div>
+          <div class="detail-header-drag-zone" data-drag-handle="true" aria-hidden="true"></div>
+          <button id="basic-info-close" class="detail-close" type="button" aria-label="关闭基本信息">×</button>
+        </div>
+        <div class="basic-form-layout">
+          <form id="basic-info-form" class="basic-form" novalidate>
+            <section class="basic-section">
+              <h4>图书分类</h4>
+              <div class="basic-grid basic-grid-1">
+                <label class="basic-field basic-field-inline">
+                  <span><span class="field-required">*</span>图书类型</span>
+                  <select id="modal-classification" class="field-control field-select">
+                    <option value="" selected disabled hidden>请选择图书类型</option>
+                    <option value="学科类">学科类</option>
+                    <option value="社科类">社科类</option>
+                  </select>
+                </label>
+              </div>
+            </section>
+
+            <section class="basic-section">
+              <h4>基本信息</h4>
+              <div class="basic-grid">
+                <label class="basic-field basic-field-span-2">
+                  <span><span class="field-required">*</span>名称</span>
+                  <input id="modal-name" class="field-control field-input field-input-fluid" type="text" placeholder="请输入名称" required aria-required="true" />
+                </label>
+                <div class="basic-field basic-field-span-2 basic-cover-field">
+                  <span>封面</span>
+                  <div class="basic-cover-row">
+                    <button id="modal-cover-trigger" class="basic-cover-trigger" type="button" aria-label="上传封面">
+                      <span class="basic-cover-plus">+</span>
+                      <span class="basic-cover-trigger-text">上传</span>
+                    </button>
+                    <input id="modal-cover-input" type="file" accept=".png,.jpg,.jpeg,.svg" hidden />
+                    <div class="basic-cover-preview-wrap">
+                      <div id="modal-cover-preview" class="basic-cover-preview" hidden></div>
+                      <p class="basic-cover-note">注意：封面图片支持格式：png、jpg、jpeg、svg。为了保证前端的显示效果，请保证图片尺寸比例为3:4。</p>
+                    </div>
+                  </div>
+                </div>
+                <label class="basic-field basic-field-span-2">
+                  <span>描述</span>
+                  <textarea id="modal-description" class="basic-textarea" rows="4" placeholder="请填写描述"></textarea>
+                </label>
+              </div>
+            </section>
+
+            <section class="basic-section">
+              <h4>图书标签</h4>
+              <div class="basic-tag-section">
+                <label class="basic-field basic-field-span-2">
+                  <span><span class="field-required">*</span>学段</span>
+                  <select id="modal-tag-stage" class="field-control field-select">
+                    <option value="" selected disabled hidden>请选择学段</option>
+                  </select>
+                </label>
+                <div class="basic-tag-group-panel">
+                  <div id="modal-tag-groups" class="basic-tag-groups"></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="basic-section">
+              <h4>套系信息</h4>
+              <div class="basic-grid basic-grid-1">
+                <label class="basic-field">
+                  <span>出版年份</span>
+                  <input id="modal-series-year" class="field-control field-input field-input-fluid" type="text" placeholder="请输入年份" />
+                </label>
+                <label class="basic-field">
+                  <span>所属套系</span>
+                  <input id="modal-series-name" class="field-control field-input field-input-fluid" type="text" placeholder="请输入所属套系" />
+                </label>
+                <label class="basic-field">
+                  <span>适用地区</span>
+                  <input id="modal-series-region" class="field-control field-input field-input-fluid" type="text" placeholder="请输入适用地区" />
+                </label>
+              </div>
+            </section>
+          </form>
+
+          <aside class="basic-side-card">
+            <h4>编务信息</h4>
+            <div id="basic-info-content" class="basic-side-list"></div>
+          </aside>
+        </div>
+        <div class="detail-actions">
+          <button id="basic-info-cancel" class="button button-muted" type="button">取消</button>
+          <button id="basic-info-save" class="button button-primary" type="button">保存</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="log-drawer" class="drawer-panel" hidden aria-hidden="true">
+      <div class="drawer-backdrop" data-drawer-close="true"></div>
+      <section class="drawer-sheet" role="dialog" aria-modal="true" aria-labelledby="log-drawer-title">
+        <div class="drawer-header">
+          <div class="detail-header-main">
+            <h3 id="log-drawer-title" class="drawer-title">操作日志</h3>
+          </div>
+          <div class="detail-header-drag-zone" aria-hidden="true"></div>
+          <button id="log-drawer-close" class="drawer-close" type="button" aria-label="关闭操作日志">×</button>
+        </div>
+        <div id="log-drawer-content" class="drawer-content"></div>
+      </section>
+    </div>
+
+    <div id="reason-modal" class="detail-modal" hidden aria-hidden="true">
+      <div class="detail-backdrop" data-reason-close="true"></div>
+      <section class="reason-dialog" role="dialog" aria-modal="true" aria-labelledby="reason-title">
+        <div class="detail-header detail-header-standard">
+          <div class="detail-header-main">
+            <h3 id="reason-title" class="detail-title">查看原因</h3>
+          </div>
+          <div class="detail-header-drag-zone" data-drag-handle="true" aria-hidden="true"></div>
+          <button id="reason-close" class="detail-close" type="button" aria-label="关闭查看原因">×</button>
+        </div>
+        <div class="reason-body">
+          <div class="reason-section">
+            <div class="reason-label">备注：</div>
+            <div id="reason-content" class="reason-content"></div>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button id="reason-confirm" class="button button-primary" type="button">关闭</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="homework-qr-modal" class="detail-modal" hidden aria-hidden="true">
+      <div class="detail-backdrop" data-homework-qr-close="true"></div>
+      <section class="detail-dialog homework-qr-dialog" role="dialog" aria-modal="true" aria-labelledby="homework-qr-title">
+        <div class="detail-header detail-header-standard">
+          <div class="detail-header-main">
+            <h3 id="homework-qr-title" class="detail-title">下载二维码</h3>
+          </div>
+          <div class="detail-header-drag-zone" data-drag-handle="true" aria-hidden="true"></div>
+          <button id="homework-qr-close" class="detail-close" type="button" aria-label="关闭下载二维码">×</button>
+        </div>
+        <div class="homework-qr-body">
+          <div class="homework-qr-field">
+            <div class="homework-qr-label">类型:</div>
+            <label class="homework-qr-checkbox">
+              <input id="homework-qr-leaf-type" type="checkbox" />
+              <span class="homework-qr-checkbox-indicator" aria-hidden="true"></span>
+              <span>未级目录码</span>
+            </label>
+          </div>
+          <div class="homework-qr-field">
+            <div class="homework-qr-label">格式:</div>
+            <div class="homework-qr-format-group" role="radiogroup" aria-label="下载尺寸">
+              <button class="homework-qr-format-button" type="button" data-qr-size="256" aria-pressed="false">PNG 256px</button>
+              <button class="homework-qr-format-button" type="button" data-qr-size="512" aria-pressed="false">PNG 512px</button>
+              <button class="homework-qr-format-button" type="button" data-qr-size="1024" aria-pressed="false">PNG 1024px</button>
+            </div>
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button id="homework-qr-cancel" class="button button-muted" type="button">取消</button>
+          <button id="homework-qr-download" class="button button-primary" type="button" disabled>下载二维码</button>
+        </div>
+      </section>
+    </div>
+
+    <template id="row-action-template">
+      <div class="row-actions">
+        <button class="action-link" type="button">编辑</button>
+        <div class="action-menu-wrap">
+          <button class="action-link action-link-more" type="button" data-action-menu-trigger="true" aria-haspopup="menu" aria-expanded="false">更多</button>
+          <div class="action-menu" hidden data-action-menu="true" role="menu" aria-label="更多操作菜单">
+            <button class="action-menu-item" type="button" role="menuitem" data-menu-action="basic">基本信息</button>
+            <button class="action-menu-item" type="button" role="menuitem" data-menu-action="homework-qr">下载校本作业码</button>
+            <button class="action-menu-item" type="button" role="menuitem" data-menu-action="logs">操作日志</button>
+            <button class="action-menu-item" type="button" role="menuitem" data-menu-action="duplicate">创建副本</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <div id="header-tooltip" class="floating-tooltip" hidden></div>
+    <div id="toast-host" class="toast-host" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="./book-list.js?v=20260404-2"></script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 184 244" role="img" aria-label="实验班提优大考卷英语封面">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f9a000"/>
+      <stop offset="100%" stop-color="#ef8f00"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#8a4d00" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+  <rect width="184" height="244" fill="url(#bg)"/>
+  <g fill="#0d63c7" transform="translate(18 16)">
+    <path d="M14 19c7-10 17-14 27-12-7 2-13 7-16 14 6-8 14-13 24-13-7 3-13 8-17 15 7-4 15-5 23-2-8 2-14 6-19 12-9 10-25 11-35 2-9-9-8-24 1-35z"/>
+    <text x="0" y="42" font-size="8" font-family="Microsoft YaHei, sans-serif">春雨教育</text>
+  </g>
+  <g filter="url(#shadow)">
+    <text x="26" y="96" fill="#ffffff" font-size="44" font-weight="900" font-family="Microsoft YaHei, sans-serif">实验班</text>
+    <text x="18" y="144" fill="#ffe81a" font-size="38" font-weight="900" font-family="Microsoft YaHei, sans-serif">提优大考卷</text>
+  </g>
+  <path d="M26 170c36-7 84-7 132 0" stroke="#fff5c0" stroke-width="2" fill="none"/>
+  <path d="M20 174c44-10 100-10 144 0" stroke="#2e8b57" stroke-width="1.5" fill="none"/>
+  <g fill="#ffe81a" font-size="11" font-weight="700" font-family="Microsoft YaHei, sans-serif">
+    <text x="32" y="154" transform="rotate(-10 32 154)">同步教材</text>
+    <text x="74" y="149">灵活变式</text>
+    <text x="84" y="178">洞悉趋势</text>
+    <text x="132" y="176">对标中考</text>
+  </g>
+  <g transform="translate(120 162)">
+    <path d="M9 4c9 9 16 24 13 42-6-10-10-12-14-14 0 6-1 11-5 16-4-8-5-15-3-22-4 2-6 4-8 8 1-10 5-18 17-30z" fill="#f6cf77"/>
+    <path d="M8 5c4 9 2 19-2 28" stroke="#fff" stroke-width="1.6" fill="none"/>
+    <path d="M15 11c3 9 2 16 0 24" stroke="#fff" stroke-width="1.2" fill="none"/>
+  </g>
+  <g transform="translate(24 184)">
+    <rect width="58" height="18" rx="2" fill="#ffea00" stroke="#d94f00"/>
+    <text x="6" y="13" fill="#df1b19" font-size="10" font-weight="800" font-family="Microsoft YaHei, sans-serif">视频精讲</text>
+    <text x="8" y="34" fill="#ff4f00" font-size="8" font-weight="900" font-family="Microsoft YaHei, sans-serif">AI提分学伴</text>
+  </g>
+  <g fill="#ffffff" font-size="9" font-weight="700" font-family="Microsoft YaHei, sans-serif">
+    <text x="26" y="225">单元综合过关</text>
+    <text x="26" y="238">期中综合测评</text>
+    <text x="84" y="225">专项复习提优</text>
+    <text x="84" y="238">期末全真测评卷</text>
+  </g>
+  <g fill="#1c64d7" font-family="KaiTi, STKaiti, serif">
+    <text x="114" y="220" font-size="28" font-weight="700">英语</text>
+  </g>
+  <text x="116" y="194" fill="#3d2200" font-size="7" font-family="Microsoft YaHei, sans-serif">总主编 严军</text>
+  <text x="112" y="237" fill="#8a2f00" font-size="7" font-family="Microsoft YaHei, sans-serif">江苏人民出版社</text>
+</svg>
