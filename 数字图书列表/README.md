@@ -13,6 +13,8 @@
 
 双击 start.bat，或直接打开 book-list.html。
 
+部署到 GitHub Pages 时，会自动使用 index.html 跳转到 book-list.html。
+
 ## 说明
 
 - 纯静态页面，无需 Node.js、Python 或后端服务
